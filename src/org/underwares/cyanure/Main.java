@@ -25,8 +25,7 @@ package org.underwares.cyanure;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-import org.underwares.cyanure.personalities.InternetChatRelay;
-import org.jibble.pircbot.*;
+import org.underwares.cyanure.bridges.InternetChatRelay;
 
 /**
  * Main Class
@@ -38,21 +37,42 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
-         System.out.println("/ ___|   _  __ _ _ __  _   _ _ __ ___ ");
-         System.out.println("| |  | | | |/ _` | '_ \\| | | | '__/ _ \\");
-         System.out.println(")| |__| |_| | (_| | | | | |_| | | |  __/");
-         System.out.println("\\____\\__, |\\__,_|_| |_|\\__,_|_|  \\___|");
-         System.out.println("|___/                            ");
-         System.out.println("Multi Purpose Artifical Inelegance Program");
+        System.out.println("/ ___|   _  __ _ _ __  _   _ _ __ ___ ");
+        System.out.println("| |  | | | |/ _` | '_ \\| | | | '__/ _ \\");
+        System.out.println(")| |__| |_| | (_| | | | | |_| | | |  __/");
+        System.out.println("\\____\\__, |\\__,_|_| |_|\\__,_|_|  \\___|");
+        System.out.println("|___/                            ");
+        System.out.println("Multi Purpose Artifical Inelegance Program");
 
-         //TODO: Implement other "personalities", right now just irc.
-         //TODO: Make irc connectivity dynamic.
-         InternetChatRelay irc = new InternetChatRelay();
-         irc.setVerbose(true);
-         irc.connect("irc.rizon.net");
-         irc.identify("password");
-         irc.joinChannel("#animorency");
-
+        int i = 0;
+        String argument;
+        while (i < args.length && args[i].startsWith("-")) {
+            argument = args[i++];
+            if (argument.equals("-interactive")) {
+                //LOL
+            } else {
+                System.out.println("Error: Malformed arguments.");
+                printHelp();
+                System.exit(1);
+            }
+        }
+        // No Arguments Specified
+        if (i == args.length) {
+            //TODO: Implement other "personalities", right now just irc.
+            //TODO: Make irc connectivity dynamic.
+            InternetChatRelay irc = new InternetChatRelay();
+            irc.setVerbose(true);
+            irc.connect("irc.rizon.net");
+            irc.identify("password");
+            irc.joinChannel("#animorency");
+        }
     }
-
+    /**
+     * Print help
+     */
+    private static void printHelp(){
+        System.out.println();
+        System.out.println("Usage: ");
+        System.out.println("cyanure <-interactive>");
+    }
 }

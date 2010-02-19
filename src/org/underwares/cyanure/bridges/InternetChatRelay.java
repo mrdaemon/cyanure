@@ -1,4 +1,4 @@
-package org.underwares.cyanure.personalities;
+package org.underwares.cyanure.bridges;
 /*
  *   ____
  *  / ___|   _  __ _ _ __  _   _ _ __ ___
