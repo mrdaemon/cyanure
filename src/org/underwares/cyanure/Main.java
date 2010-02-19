@@ -37,12 +37,17 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
-        System.out.println("/ ___|   _  __ _ _ __  _   _ _ __ ___ ");
-        System.out.println("| |  | | | |/ _` | '_ \\| | | | '__/ _ \\");
-        System.out.println(")| |__| |_| | (_| | | | | |_| | | |  __/");
-        System.out.println("\\____\\__, |\\__,_|_| |_|\\__,_|_|  \\___|");
-        System.out.println("|___/                            ");
+
+        System.out.println("  ####    #   #    ##    #    #  #    #  #####   ######");
+        System.out.println(" #    #    # #    #  #   ##   #  #    #  #    #  #");
+        System.out.println(" #          #    #    #  # #  #  #    #  #    #  #####");
+        System.out.println(" #          #    ######  #  # #  #    #  #####   #");
+        System.out.println(" #    #     #    #    #  #   ##  #    #  #   #   #");
+        System.out.println("  ####      #    #    #  #    #   ####   #    #  ######");
+        System.out.println();
+
         System.out.println("Multi Purpose Artifical Inelegance Program");
+        System.out.println("Version");
 
         int i = 0;
         String argument;
