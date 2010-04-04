@@ -1,3 +1,4 @@
+package org.underwares.cyanure.bridges;
 /* $Id$
  *   ____
  *  / ___|   _  __ _ _ __  _   _ _ __ ___
@@ -24,12 +25,34 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package org.underwares.cyanure;
+
+import java.io.*;
+
 
 /**
  *
- * @author gauthiera
+ * @author supernaut
  */
-public class Constants {
-    public static String VERSION = "0.99a-svn";
+public class Interactive {
+    public static int run(){
+        BufferedReader stdin = new BufferedReader(
+                new InputStreamReader(System.in));
+        System.out.println("## Entering Interactive mode");
+
+        while(true){
+            System.out.print("<< ");
+            try {
+                String input = stdin.readLine();
+                if(input.equals("*STOP")){
+                    System.out.println("## Stopping Execution");
+                    break;
+                } else {
+                    System.out.println(">> " + input);
+                }
+            } catch(IOException e) {
+                return(0);
+            }
+        }
+        return(1);
+    }
 }

@@ -1,5 +1,5 @@
 package org.underwares.cyanure;
-/*
+/* $Id$
  *   ____
  *  / ___|   _  __ _ _ __  _   _ _ __ ___
  * | |  | | | |/ _` | '_ \| | | | '__/ _ \
@@ -25,7 +25,7 @@ package org.underwares.cyanure;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-import org.underwares.cyanure.bridges.InternetChatRelay;
+import org.underwares.cyanure.bridges.*;
 
 /**
  * Main Class
@@ -47,14 +47,15 @@ public class Main {
         System.out.println();
 
         System.out.println("Multi Purpose Artifical Inelegance Program");
-        System.out.println("Version");
+        System.out.println("Version " + Constants.VERSION);
 
         int i = 0;
         String argument;
         while (i < args.length && args[i].startsWith("-")) {
             argument = args[i++];
             if (argument.equals("-interactive")) {
-                //LOL
+                // Interactive Personality
+                System.exit(Interactive.run());
             } else {
                 System.out.println("Error: Malformed arguments.");
                 printHelp();
