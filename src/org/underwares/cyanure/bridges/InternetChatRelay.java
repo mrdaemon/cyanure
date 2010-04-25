@@ -27,15 +27,20 @@ package org.underwares.cyanure.bridges;
  */
 
 import org.jibble.pircbot.*;
+import org.underwares.cyanure.ai.Soul;
 
 /**
  *
  * @author supernaut
  */
 public class InternetChatRelay extends PircBot{
-    public InternetChatRelay(){
+
+    Soul soul;
+
+    public InternetChatRelay(Soul soul){
         //TODO: Make this, well, not static.
         this.setName("cyanure");
+        this.soul = soul;
     }
 
     @Override
@@ -44,9 +49,19 @@ public class InternetChatRelay extends PircBot{
         
         String prefix = this.getNick() + ": ";
 
-        if(message.equalsIgnoreCase(prefix + "time")) {
-            String time = new java.util.Date().toString();
-            sendMessage(channel, sender + ": Local time here is " + time);
+        if (message.toLowerCase().startsWith(prefix)) {
+            String input = message.replaceFirst(prefix, "");
+
+            if (input.equalsIgnoreCase("*time")) {
+                String time = new java.util.Date().toString();
+                sendMessage(channel, sender + ": Local time here is " + time);
+            } else if (input.equalsIgnoreCase("*talk")) {
+                sendMessage(channel, sender + ": " + soul.speak());
+            } else {
+                sendMessage(channel, sender + ": " + soul.converse(input));
+            }
+        } else {
+            soul.learn(message);
         }
     }
 }

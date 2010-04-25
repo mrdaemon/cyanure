@@ -95,7 +95,7 @@ public class Main {
                 System.exit(1);
             }
         }
-
+        // Interactive mode
         if(config.getBoolean("interactive")){
             int status = Interactive.run(soul);
             System.out.println("Saving soul to "
@@ -105,13 +105,15 @@ public class Main {
             } catch(IOException e){
                 System.err.print("Unable to save "
                                 + config.getString("brainfile"));
+            } finally {
+                System.exit(status);
             }
 
         } else {
             // No Arguments Specified
             //TODO: Implement other "personalities", right now just irc.
             //TODO: Make irc connectivity dynamic.
-            InternetChatRelay irc = new InternetChatRelay();
+            InternetChatRelay irc = new InternetChatRelay(soul);
             irc.setVerbose(true);
             irc.connect("irc.rizon.net");
             irc.identify("password");
