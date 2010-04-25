@@ -27,8 +27,7 @@ package org.underwares.cyanure.bridges;
  */
 
 import java.io.*;
-import org.underwares.cyanure.soul.Memory;
-
+import org.underwares.cyanure.ai.Soul;
 
 /**
  * Interactive mode static class
@@ -36,17 +35,7 @@ import org.underwares.cyanure.soul.Memory;
  */
 public class Interactive {
 
-    Memory cyanure;
-
-    public Interactive(){
-        this(new Memory());
-    }
-
-    public Interactive(Memory cyanure) {
-        this.cyanure = cyanure;
-    }
-
-    public int run(){
+    public static int run(Soul soul){
         BufferedReader stdin = new BufferedReader(
                 new InputStreamReader(System.in));
         System.out.println("## Entering Interactive mode");
@@ -65,13 +54,15 @@ public class Interactive {
                         System.out.println("## *STOP\tStop Execution");
                         System.out.println("## *HELP\tDisplay this screen");
                         System.out.println("#################################");
+                    } else if(input.equals("*SAVE")){
+                        System.out.println("## Dumping memory to file...");
                     } else {
                         System.out.println("##ERR: System Command \"" +
                                 input + "\" not understood.");
                         System.out.println("## Call '*HELP' for help.");
                     }
                 } else {
-                    System.out.println(">> " + cyanure.process(input));
+                    System.out.println(">> " + soul.converse(input));
                 }
             } catch(IOException e) {
                 System.out.println("## Returning with status 0");

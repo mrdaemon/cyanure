@@ -1,4 +1,3 @@
-package org.underwares.cyanure.bridges;
 /* $Id$
  *   ____
  *  / ___|   _  __ _ _ __  _   _ _ __ ___
@@ -25,6 +24,7 @@ package org.underwares.cyanure.bridges;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package org.underwares.cyanure.bridges;
 
 import org.jibble.pircbot.*;
 

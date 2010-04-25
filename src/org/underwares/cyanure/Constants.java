@@ -27,9 +27,10 @@
 package org.underwares.cyanure;
 
 /**
- * Available constants
+ *
  * @author gauthiera
  */
 public class Constants {
-    public static String VERSION = "0.99a-svn";
+    public static String AUTHOR = "Alexandre Gauthier <alex@lab.underwares.org>";
+    public static String VERSION = "0.1a";
 }
