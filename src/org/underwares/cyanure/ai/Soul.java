@@ -1,4 +1,5 @@
-/*
+package org.underwares.cyanure.ai;
+/* $Id$
  *   ____
  *  / ___|   _  __ _ _ __  _   _ _ __ ___
  * | |  | | | |/ _` | '_ \| | | | '__/ _ \
@@ -24,7 +25,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package org.underwares.cyanure.ai;
 
 import java.io.*;
 import org.jibble.jmegahal.*;
