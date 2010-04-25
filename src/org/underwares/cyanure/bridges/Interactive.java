@@ -27,14 +27,26 @@ package org.underwares.cyanure.bridges;
  */
 
 import java.io.*;
+import org.underwares.cyanure.soul.Memory;
 
 
 /**
- *
+ * Interactive mode static class
  * @author supernaut
  */
 public class Interactive {
-    public static int run(){
+
+    Memory cyanure;
+
+    public Interactive(){
+        this(new Memory());
+    }
+
+    public Interactive(Memory cyanure) {
+        this.cyanure = cyanure;
+    }
+
+    public int run(){
         BufferedReader stdin = new BufferedReader(
                 new InputStreamReader(System.in));
         System.out.println("## Entering Interactive mode");
@@ -43,16 +55,30 @@ public class Interactive {
             System.out.print("<< ");
             try {
                 String input = stdin.readLine();
-                if(input.equals("*STOP")){
-                    System.out.println("## Stopping Execution");
-                    break;
+                // System Command Entered
+                if(input.startsWith("*")){
+                    if(input.equals("*STOP")){
+                        System.out.println("## Stopping Execution");
+                        break;
+                    } else if(input.equals("*HELP")){
+                        System.out.println("############ SYSCMDS ############");
+                        System.out.println("## *STOP\tStop Execution");
+                        System.out.println("## *HELP\tDisplay this screen");
+                        System.out.println("#################################");
+                    } else {
+                        System.out.println("##ERR: System Command \"" +
+                                input + "\" not understood.");
+                        System.out.println("## Call '*HELP' for help.");
+                    }
                 } else {
-                    System.out.println(">> " + input);
+                    System.out.println(">> " + cyanure.process(input));
                 }
             } catch(IOException e) {
+                System.out.println("## Returning with status 0");
                 return(0);
             }
         }
+        System.out.println("## Returning with status 1");
         return(1);
     }
 }

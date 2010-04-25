@@ -53,9 +53,11 @@ public class Main {
         String argument;
         while (i < args.length && args[i].startsWith("-")) {
             argument = args[i++];
+
             if (argument.equals("-interactive")) {
                 // Interactive Personality
-                System.exit(Interactive.run());
+                Interactive personality = new Interactive();
+                System.exit(personality.run());
             } else {
                 System.out.println("Error: Malformed arguments.");
                 printHelp();
