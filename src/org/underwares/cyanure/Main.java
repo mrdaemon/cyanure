@@ -113,7 +113,7 @@ public class Main {
             // No Arguments Specified
             //TODO: Implement other "personalities", right now just irc.
             //TODO: Make irc connectivity dynamic.
-            InternetChatRelay irc = new InternetChatRelay(soul);
+            InternetChatRelay irc = new InternetChatRelay(soul, config);
             irc.setVerbose(true);
             irc.connect("irc.rizon.net");
             irc.identify("password");

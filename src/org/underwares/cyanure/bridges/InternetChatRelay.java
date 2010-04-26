@@ -25,9 +25,13 @@ package org.underwares.cyanure.bridges;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-import org.jibble.pircbot.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.underwares.cyanure.ai.Soul;
+import com.martiansoftware.jsap.JSAPResult;
+import org.jibble.pircbot.*;
 
 /**
  *
@@ -36,11 +40,13 @@ import org.underwares.cyanure.ai.Soul;
 public class InternetChatRelay extends PircBot{
 
     Soul soul;
+    JSAPResult config;
 
-    public InternetChatRelay(Soul soul){
+    public InternetChatRelay(Soul soul, JSAPResult config){
         //TODO: Make this, well, not static.
         this.setName("cyanure");
         this.soul = soul;
+        this.config = config;
     }
 
     @Override
@@ -57,6 +63,19 @@ public class InternetChatRelay extends PircBot{
                 sendMessage(channel, sender + ": Local time here is " + time);
             } else if (input.equalsIgnoreCase("*talk")) {
                 sendMessage(channel, sender + ": " + soul.speak());
+            } else if (input.equalsIgnoreCase("*save")) {
+                sendMessage(channel, "## Saving soul...");
+                try {
+                    soul.save(config.getString("brainfile"));
+                } catch (FileNotFoundException ex) {
+                    sendMessage(channel, "## ERROR: File not found.");
+                } catch (IOException ex) {
+                    sendMessage(channel, "## ERROR: Generic IO Exception.");
+                } catch (Exception ex) {
+                    sendMessage(channel, "## ERROR: Fata Error. Check logs for details.");
+                } finally {
+                    sendMessage(channel, "## Done.");
+                }
             } else {
                 sendMessage(channel, sender + ": " + soul.converse(input));
             }
