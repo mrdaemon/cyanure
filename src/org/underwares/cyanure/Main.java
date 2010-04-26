@@ -69,6 +69,11 @@ public class Main {
             System.exit(1);
         }
 
+        // Stop after displaying header if version was requested.
+        if(config.getBoolean("version")){
+            System.exit(0);
+        }
+
         // Load Soul
         System.out.println("Initalizing soul...");
         Soul soul;
@@ -142,6 +147,15 @@ public class Main {
      * @param jsapinstance
      */
     private static void registerParameters(JSAP jsapinstance) throws JSAPException{
+        /**
+         * Version
+         */
+        Switch version = new Switch("version")
+                            .setShortFlag('v')
+                            .setLongFlag("version");
+        version.setHelp("Display version numbers and exit");
+        jsapinstance.registerParameter(version);
+
         /**
          * Interactive mode
          */
