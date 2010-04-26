@@ -91,8 +91,12 @@ public class Main {
 
         // If specified, learn the contents of a text file
         if(config.getBoolean("learn")){
+            System.out.println("Learning mode activated.");
+            System.out.println("Reading in " + config.getString("learn"));
             try {
                 soul.readFile(config.getString("learn"));
+                System.out.println("Successfully learned "
+                        + config.getString("learn"));
             } catch(IOException e) {
                 System.err.println("Error: No such file: " +
                         config.getString("learn"));

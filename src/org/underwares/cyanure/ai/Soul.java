@@ -58,10 +58,20 @@ public class Soul {
      */
     public void readFile(String uri) throws IOException{
         File f = new File(uri);
+        this.readFile(f);
+    }
+
+    /**
+     * Read and learn from a text file
+     * @param f File that must be read.
+     * @throws IOException
+     */
+    public void readFile(File f) throws IOException{
         if(f.exists()){
-            this.ai.addDocument(uri);
+            this.ai.addDocument(f.toURI().toString());
         } else {
-            throw new IOException("File " + uri + " does not exists.");
+            throw new IOException("File " + f.toURI().toString()
+                    + " does not exists.");
         }
     }
 
