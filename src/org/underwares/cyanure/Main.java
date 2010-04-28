@@ -74,6 +74,30 @@ public class Main {
             System.exit(0);
         }
 
+        // Read configuration file
+        System.out.println("Reading configuration file: "
+                            + config.getString("config"));
+        File cf = new File(config.getString("config"));
+        try {
+            Configuration.loadFile(cf);
+            System.out.println("Configuration Loaded.");
+        } catch (IOException e) {
+            System.err.println("ERROR: Unable to read configuration file.");
+            System.err.println(e.getMessage());
+            System.exit(1);
+        } catch (InvalidAIConfigException e) {
+            System.err.println("ERROR: Malformed configuration file.");
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+
+        // Display configuration and exit if --checkconf specified
+        if(config.getBoolean("validate")){
+            System.out.println("Loaded Configuration:");
+            System.out.println(Configuration.getConfiguration());
+            System.exit(1);
+        }
+
         // Load Soul
         System.out.println("Initalizing soul...");
         Soul soul;
@@ -83,12 +107,16 @@ public class Main {
             FileInputStream fis = new FileInputStream(brainfile);
             ObjectInputStream ois = new ObjectInputStream(fis);
             soul = new Soul((JMegaHal)ois.readObject());
+            ois.close();
+            fis.close();
         } else {
             System.out.println("Creating new, blank soul at "
                                 + brainfile + "...");
             soul = new Soul();
+            // TODO: Learn default sentence
         }
-
+        System.out.println("Soul initialized.");
+        
         // If specified, learn the contents of a text file
         if(config.getBoolean("learn")){
             System.out.println("Learning mode activated.");
@@ -120,13 +148,14 @@ public class Main {
 
         } else {
             // No Arguments Specified
-            //TODO: Implement other "personalities", right now just irc.
-            //TODO: Make irc connectivity dynamic.
+            // IRC bot mode
             InternetChatRelay irc = new InternetChatRelay(soul, config);
             irc.setVerbose(true);
-            irc.connect("irc.rizon.net");
-            irc.identify("password");
-            irc.joinChannel("#animorency");
+            irc.connect(Configuration.getIrc_server());
+            if(Configuration.getIrc_doidentify()){
+                    irc.identify(Configuration.getIrc_server());
+            }
+            irc.joinChannel(Configuration.getIrc_channel());
         }
     }
     /**
@@ -181,6 +210,19 @@ public class Main {
                             .setRequired(false);
         brain.setHelp("Brain file to use for this session");
         jsapinstance.registerParameter(brain);
+
+        /**
+         * Configuration File
+         */
+        FlaggedOption config = new FlaggedOption("config")
+                               .setShortFlag('c')
+                               .setLongFlag("config")
+                               .setDefault(System.getProperty("user.dir")
+                                           + File.separator
+                                           + "configuration.properties")
+                               .setRequired(false);
+        config.setHelp("Configuration file to use.");
+        jsapinstance.registerParameter(config);
         
         /**
          * Learning mode
@@ -191,6 +233,15 @@ public class Main {
                               .setRequired(false);
         learn.setHelp("Learn the content of the specified text file");
         jsapinstance.registerParameter(learn);
+
+        /**
+         * Validate configuration file
+         */
+        Switch validate = new Switch("validate")
+                          .setShortFlag('x')
+                          .setLongFlag("validateconf");
+        validate.setHelp("Validate config file and output values");
+        jsapinstance.registerParameter(validate);
 
 
     }

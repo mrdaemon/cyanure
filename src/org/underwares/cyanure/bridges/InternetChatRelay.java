@@ -30,6 +30,7 @@ import java.io.IOException;
 import org.underwares.cyanure.ai.Soul;
 import com.martiansoftware.jsap.JSAPResult;
 import org.jibble.pircbot.*;
+import org.underwares.cyanure.Configuration;
 
 /**
  *
@@ -42,7 +43,7 @@ public class InternetChatRelay extends PircBot{
 
     public InternetChatRelay(Soul soul, JSAPResult config){
         //TODO: Make this, well, not static.
-        this.setName("cyanure");
+        this.setName(Configuration.getAiname());
         this.soul = soul;
         this.config = config;
     }
