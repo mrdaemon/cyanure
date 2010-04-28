@@ -153,7 +153,7 @@ public class Main {
             irc.setVerbose(true);
             irc.connect(Configuration.getIrc_server());
             if(Configuration.getIrc_doidentify()){
-                    irc.identify(Configuration.getIrc_server());
+                    irc.identify(Configuration.getIrc_identpassword());
             }
             irc.joinChannel(Configuration.getIrc_channel());
         }
