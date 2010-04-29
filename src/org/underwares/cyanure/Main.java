@@ -95,7 +95,7 @@ public class Main {
         if(config.getBoolean("validate")){
             System.out.println("Loaded Configuration:");
             System.out.println(Configuration.getConfiguration());
-            System.exit(1);
+            System.exit(0);
         }
 
         // Load Soul
