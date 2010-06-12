@@ -94,7 +94,7 @@ public class Main {
         // Display configuration and exit if --checkconf specified
         if(config.getBoolean("validate")){
             System.out.println("Loaded Configuration:");
-            System.out.println(Configuration.getConfiguration());
+            System.out.println(Configuration.toString());
             System.exit(0);
         }
 
