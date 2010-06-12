@@ -190,9 +190,8 @@ public class Configuration {
     /**
      * Get textual representation of Configuration
      * @return
-	 * @override
      */
-    public static String toString(){
+    public static String getConfiguration(){
         return "AI Name: " + Configuration.ainame + "\n"
                 + "IRC Server: " + Configuration.irc_server + "\n"
                 + "IRC Channel: " + Configuration.irc_channel + "\n"
