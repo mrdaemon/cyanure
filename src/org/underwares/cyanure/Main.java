@@ -25,26 +25,47 @@ package org.underwares.cyanure;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 import org.underwares.cyanure.bridges.*;
 import org.underwares.cyanure.ai.Soul;
+import org.underwares.cyanure.tasks.SaveSoulTask;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 
 import com.martiansoftware.jsap.*;
 import org.jibble.jmegahal.JMegaHal;
+import org.jibble.pircbot.IrcException;
+
 /**
  * Main Class
  * @author Alexandre Gauthier
  */
 public class Main {
+
+    /**
+     * Command line arguments configuration results.
+     * Declared with package scope to allow internal components 
+     * to access it.
+     *
+     * <b>NOTE: You should really use the <code>Configuration</code>
+     * class instead unless you absolutely know what you are doing.</b>
+     * 
+     * @see Configuration#getBrainFile()
+     */
+    static JSAPResult config;
+
     /**
      * Program entry point
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
+        /* TODO: Cleanup this file. Some logic should be moved to private
+         subroutines for clarity. Right now it is rather... urgh.*/
+
         // Print Banner
         System.out.println();
         System.out.println("  ####    #   #    ##    #    #  #    #  #####   ######");
@@ -61,9 +82,16 @@ public class Main {
 
         // Parameters Setup
         JSAP jsap = new JSAP();
-        registerParameters(jsap);
-        JSAPResult config = jsap.parse(args);
-
+        
+        try {
+            registerParameters(jsap);
+            config = jsap.parse(args);
+        } catch (JSAPException ex) {
+           System.err.println("Internal Error setting up parameters.");
+           ex.printStackTrace(System.err);
+        }
+        
+        // Display help on configuration failure
         if(!config.success()){
             printHelp(jsap, config);
             System.exit(1);
@@ -100,23 +128,54 @@ public class Main {
 
         // Load Soul
         System.out.println("Initalizing soul...");
-        Soul soul;
+        
+        Soul soul = null;
         File brainfile = new File(config.getString("brainfile"));
+
         if(brainfile.exists()){
+            FileInputStream fis = null;
+            ObjectInputStream ois = null;
             System.out.println("Loading memory from " + brainfile + "...");
-            FileInputStream fis = new FileInputStream(brainfile);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            soul = new Soul((JMegaHal)ois.readObject());
-            ois.close();
-            fis.close();
+            try {
+                fis = new FileInputStream(brainfile);
+                ois = new ObjectInputStream(fis);
+                soul = new Soul((JMegaHal) ois.readObject());
+            } catch (FileNotFoundException ex) {
+                System.err.println("Unable to load memory!");
+                System.err.println(brainfile + ": No such file or directory.");
+                System.exit(1);
+            } catch (ClassNotFoundException ex) {
+                System.err.println("Error reading serialized data from " +
+                        brainfile + ". Data is either corrupt or invalid.");
+                System.exit(1);
+            } catch (IOException ex) {
+                System.err.println("An unexpected IO Exception occured " +
+                        "while trying to read memory file.");
+                System.err.println("Stack trace follows.");
+                ex.printStackTrace(System.err);
+                System.exit(1);
+            } finally {
+                try {
+                    // Do attempt to close the file handle.
+                    ois.close();
+                    fis.close();
+                } catch (IOException ex) {
+                    System.err.println("WARNING: Unable to close memory file handle(s)");
+                    ex.printStackTrace(System.err);
+                }
+            }
         } else {
             System.out.println("Creating new, blank soul at "
                                 + brainfile + "...");
             soul = new Soul();
-            // TODO: Learn default sentence
+
+            // Fill in minimal initial data. With apologies to Johnny-5.
+            soul.learn("NEED INPUT");
         }
+
         System.out.println("Soul initialized.");
         
+
         // If specified, learn the contents of a text file
         if(config.getBoolean("learn")){
             System.out.println("Learning mode activated.");
@@ -132,6 +191,18 @@ public class Main {
                 System.exit(1);
             }
         }
+
+        // Prepare DaemonTaskManager and register Tasks
+        System.out.println("Initializing Daemon Tasks...");
+        DaemonTaskManager bgtasks = DaemonTaskManager.getInstance();
+
+        bgtasks.scheduleTask(new SaveSoulTask(soul), 15);
+
+        System.out.println("Initialized Daemon Task Manager with " +
+                                bgtasks.getTaskCount() + " task(s).");
+        System.out.println(bgtasks.toString());
+
+        
         // Interactive mode
         if(config.getBoolean("interactive")){
             int status = Interactive.run(soul);
@@ -149,12 +220,23 @@ public class Main {
         } else {
             // No Arguments Specified
             // IRC bot mode
-            InternetChatRelay irc = new InternetChatRelay(soul, config);
+            InternetChatRelay irc = new InternetChatRelay(soul);
             irc.setVerbose(true);
-            irc.connect(Configuration.getIrc_server());
+            try {
+                irc.connect(Configuration.getIrc_server());
+            } catch (IOException ex) {
+                System.err.println("Unable to connect to " +
+                                    Configuration.getIrc_server());
+                System.err.println(ex.getLocalizedMessage());
+            } catch (IrcException ex) {
+                System.err.println("Error connecting to IRC:" + ex.getLocalizedMessage());
+            }
+
+            // IDENTIFY support. Very basic.
             if(Configuration.getIrc_doidentify()){
                     irc.identify(Configuration.getIrc_identpassword());
             }
+
             irc.joinChannel(Configuration.getIrc_channel());
         }
     }
@@ -183,65 +265,65 @@ public class Main {
         /**
          * Version
          */
-        Switch version = new Switch("version")
+        Switch versionop = new Switch("version")
                             .setShortFlag('v')
                             .setLongFlag("version");
-        version.setHelp("Display version numbers and exit");
-        jsapinstance.registerParameter(version);
+        versionop.setHelp("Display version numbers and exit");
+        jsapinstance.registerParameter(versionop);
 
         /**
          * Interactive mode
          */
-        Switch interactive = new Switch("interactive")
+        Switch interactiveop = new Switch("interactive")
                             .setShortFlag('i')
                             .setLongFlag("interactive");
-        interactive.setHelp("Run Cyanure in interactive mode (conversation)");
-        jsapinstance.registerParameter(interactive);
+        interactiveop.setHelp("Run Cyanure in interactive mode (conversation)");
+        jsapinstance.registerParameter(interactiveop);
 
         /**
          * Brain File
          */
-        FlaggedOption brain = new FlaggedOption("brainfile")
+        FlaggedOption brainop = new FlaggedOption("brainfile")
                             .setShortFlag('f')
                             .setLongFlag("file")
                             .setDefault(System.getProperty("user.dir")
                                         + File.separator
                                         +"brain.dat")
                             .setRequired(false);
-        brain.setHelp("Brain file to use for this session");
-        jsapinstance.registerParameter(brain);
+        brainop.setHelp("Brain file to use for this session");
+        jsapinstance.registerParameter(brainop);
 
         /**
          * Configuration File
          */
-        FlaggedOption config = new FlaggedOption("config")
+        FlaggedOption configop = new FlaggedOption("config")
                                .setShortFlag('c')
                                .setLongFlag("config")
                                .setDefault(System.getProperty("user.dir")
                                            + File.separator
                                            + "configuration.properties")
                                .setRequired(false);
-        config.setHelp("Configuration file to use.");
-        jsapinstance.registerParameter(config);
+        configop.setHelp("Configuration file to use.");
+        jsapinstance.registerParameter(configop);
         
         /**
          * Learning mode
          */
-        FlaggedOption learn = new QualifiedSwitch("learn")
+        FlaggedOption learnop = new QualifiedSwitch("learn")
                               .setShortFlag('l')
                               .setLongFlag("learn")
                               .setRequired(false);
-        learn.setHelp("Learn the content of the specified text file");
-        jsapinstance.registerParameter(learn);
+        learnop.setHelp("Learn the content of the specified text file");
+        jsapinstance.registerParameter(learnop);
 
         /**
          * Validate configuration file
          */
-        Switch validate = new Switch("validate")
+        Switch validateop = new Switch("validate")
                           .setShortFlag('x')
                           .setLongFlag("validateconf");
-        validate.setHelp("Validate config file and output values");
-        jsapinstance.registerParameter(validate);
+        validateop.setHelp("Validate config file and output values");
+        jsapinstance.registerParameter(validateop);
 
 
     }

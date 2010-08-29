@@ -79,7 +79,7 @@ public class Soul {
      * Learn from a sentence.
      * @param input
      */
-    public void learn(String input){
+    public synchronized void learn(String input){
         this.ai.add(input);
     }
 
@@ -112,7 +112,7 @@ public class Soul {
     /**
      * Dumps current knowledge to disk.
      */
-    public void save(String uri) throws FileNotFoundException, IOException {
+    public synchronized void save(String uri) throws FileNotFoundException, IOException {
         FileOutputStream fos = new FileOutputStream(uri);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(this.ai);

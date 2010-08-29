@@ -33,7 +33,8 @@ import java.util.Properties;
 /**
  * Static Configuration class, handles reading the
  * properties file as well as validating it.
- * Exposes members.
+ * Exposes members and configuration values globally.
+ * 
  * @author Alexandre Gauthier
  */
 public class Configuration {
@@ -50,6 +51,19 @@ public class Configuration {
     private static String irc_identpassword;
     private static String irc_altnickname;
 
+    // Runtime settings Settings (external, not defined through properties)
+    private static String rt_brainfile;
+
+    // Advanced Settings, with defaults
+    private static int tm_maxthreads = 1;
+
+    /**
+     * Load Configuration File
+     *
+     * @param file  Properties file to load
+     * @throws IOException
+     * @throws InvalidAIConfigException
+     */
     public static void loadFile(File file) 
             throws IOException, InvalidAIConfigException {
         // Load Properties
@@ -65,18 +79,25 @@ public class Configuration {
             throw new InvalidAIConfigException("Configuration file is empty");
         }
 
-        // Set all private members
+        // Set all standard private members
         Configuration.setAiname(config.getProperty("ainame"));
         Configuration.setIrc_server(config.getProperty("irc_server"));
         Configuration.setIrc_channel(config.getProperty("irc_channel"));
         Configuration.setIrc_doidentify(config.getProperty("irc_doidentify"));
         Configuration.setIrc_identpassword(config.getProperty("irc_identpassword"));
         Configuration.setIrc_altnickname(config.getProperty("irc_altnickname"));
+
+        // Set advanced private members (with defaults)
+        if(config.containsKey("tm_maxthreads")){
+            Configuration.setTm_maxthreads(config.getProperty("tm_maxthreads"));
+        }
+
     }
 
     /**
      * Get current AI Name
-     * @return ainame
+     *
+     * @return ainame  AI Name
      */
     public static String getAiname() {
         return ainame;
@@ -84,7 +105,8 @@ public class Configuration {
 
     /**
      * Get alternate IRC nickname
-     * @return irc alt nick
+     *
+     * @return irc_altnickname  irc alt nick
      */
     public static String getIrc_altnickname() {
         return irc_altnickname;
@@ -92,7 +114,8 @@ public class Configuration {
 
     /**
      * Get current IRC Channel
-     * @return
+     *
+     * @return irc_channel   channel name
      */
     public static String getIrc_channel() {
         return irc_channel;
@@ -101,7 +124,8 @@ public class Configuration {
     /**
      * Inquire as if the bot is configured to do nickserv
      * identification
-     * @return
+     *
+     * @return irc_doidentify  Do irc ident?
      */
     public static Boolean getIrc_doidentify() {
         return irc_doidentify;
@@ -109,7 +133,8 @@ public class Configuration {
 
     /**
      * Get current IRC nickserv password
-     * @return
+     *
+     * @return irc_identpassword  irc server password
      */
     public static String getIrc_identpassword() {
         return irc_identpassword;
@@ -117,10 +142,41 @@ public class Configuration {
 
     /**
      * Get current IRC Server
-     * @return
+     *
+     * @return irc_server  irc server host/address
      */
     public static String getIrc_server() {
         return irc_server;
+    }
+
+    /**
+     * Get maximum amount of threads for task manager pool
+     *
+     * @return tm_maxthreads  thread pool size
+     */
+    public static int getTm_maxthreads() {
+        return tm_maxthreads;
+    }
+
+
+
+    /*
+     * External Getters
+     * The following getters rely on external classes to provide
+     * information. This was done to centralize tunables and configuration
+     * to a single class.
+     *
+     * You may see them as wrappers if you wish.
+     */
+
+    /**
+     * Get current brainfile, as defined on the command line.
+     *
+     * @see Main#config
+     * @return brainfile URI
+     */
+    public static String getBrainFile() {
+        return Main.config.getString("brainfile");
     }
 
     /*
@@ -134,6 +190,7 @@ public class Configuration {
 
     /**
      * Set AI Name
+     *
      * @param ainame
      * @throws InvalidAIConfigException
      */
@@ -144,6 +201,7 @@ public class Configuration {
 
     /**
      * Set Alternate Nick for IRC
+     *
      * @param irc_altnickname
      * @throws InvalidAIConfigException
      */
@@ -154,6 +212,7 @@ public class Configuration {
 
     /**
      * Set IRC Channel
+     *
      * @param irc_channel
      * @throws InvalidAIConfigException
      */
@@ -166,6 +225,12 @@ public class Configuration {
         }
     }
 
+    /**
+     * Set irc_doidentify setting
+     *
+     * @param irc_doidentify  Do IRC ident?
+     * @throws InvalidAIConfigException
+     */
     private static void setIrc_doidentify(String irc_doidentify)
             throws InvalidAIConfigException {
         if(irc_doidentify.equalsIgnoreCase("true")){
@@ -177,18 +242,50 @@ public class Configuration {
         }
     }
 
+    /**
+     * Set IRC ident Password
+     *
+     * @param irc_identpassword
+     * @throws InvalidAIConfigException
+     */
     private static void setIrc_identpassword(String irc_identpassword)
             throws InvalidAIConfigException {
         Configuration.irc_identpassword = irc_identpassword;
     }
 
+    /**
+     * Set IRC Server hostname
+     *
+     * @param irc_server
+     * @throws InvalidAIConfigException
+     */
     private static void setIrc_server(String irc_server)
             throws InvalidAIConfigException {
         Configuration.irc_server = irc_server;
     }
 
     /**
+     * Set maximum thread pool size for Task Manager.
+     * Setter takes an integer because it is what the properties parser
+     * will obviously return, and it makes it easier to react to someone
+     * entering a string there. Sorry if it seems backwards.
+     *
+     * @param tm_maxthreads (must be an integer)
+     * @throws InvalidAIConfigException
+     */
+    private static void setTm_maxthreads(String tm_maxthreads)
+            throws InvalidAIConfigException {
+        try{
+            int mtvalue = Integer.parseInt(tm_maxthreads);
+            Configuration.tm_maxthreads = mtvalue;
+        } catch(NumberFormatException ex) {
+            throw new InvalidAIConfigException("tm_maxthreads must be an integer.");
+        }
+    }
+
+    /**
      * Get textual representation of Configuration
+     * 
      * @return
      */
     public static String getConfiguration(){
@@ -197,6 +294,10 @@ public class Configuration {
                 + "IRC Channel: " + Configuration.irc_channel + "\n"
                 + "IRC Identify? " + Configuration.irc_doidentify.toString() + "\n"
                 + "IRC Password? " + Configuration.irc_identpassword + "\n"
-                + "IRC AltNick: " + Configuration.irc_altnickname;
+                + "IRC AltNick: " + Configuration.irc_altnickname + "\n"
+                + "\n"
+                + "** Optional Settings **"
+                + "Daemon Task Manager Thread Pool Size: "
+                + Configuration.tm_maxthreads + "\n";
     }
 }

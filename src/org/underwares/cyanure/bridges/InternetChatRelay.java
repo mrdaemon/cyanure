@@ -27,10 +27,13 @@ package org.underwares.cyanure.bridges;
  */
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import org.underwares.cyanure.ai.Soul;
-import com.martiansoftware.jsap.JSAPResult;
+
 import org.jibble.pircbot.*;
+
+import org.underwares.cyanure.ai.Soul;
 import org.underwares.cyanure.Configuration;
+import org.underwares.cyanure.Constants;
+import org.underwares.cyanure.DaemonTaskManager;
 
 /**
  *
@@ -39,13 +42,12 @@ import org.underwares.cyanure.Configuration;
 public class InternetChatRelay extends PircBot{
 
     Soul soul;
-    JSAPResult config;
+    DaemonTaskManager taskmanager = DaemonTaskManager.getInstance();
 
-    public InternetChatRelay(Soul soul, JSAPResult config){
+    public InternetChatRelay(Soul soul){
         //TODO: Make this, well, not static.
         this.setName(Configuration.getAiname());
         this.soul = soul;
-        this.config = config;
     }
 
     @Override
@@ -65,16 +67,23 @@ public class InternetChatRelay extends PircBot{
             } else if (input.equalsIgnoreCase("*save")) {
                 sendMessage(channel, "## Saving soul...");
                 try {
-                    soul.save(config.getString("brainfile"));
+                    soul.save(Configuration.getBrainFile());
                 } catch (FileNotFoundException ex) {
                     sendMessage(channel, "## ERROR: File not found.");
                 } catch (IOException ex) {
                     sendMessage(channel, "## ERROR: Generic IO Exception.");
                 } catch (Exception ex) {
-                    sendMessage(channel, "## ERROR: Fata Error. Check logs for details.");
+                    sendMessage(channel, "## ERROR: Unhandled Exception. Check logs for details.");
                 } finally {
                     sendMessage(channel, "## Done.");
                 }
+            } else if (input.equalsIgnoreCase("*version")) {
+                sendMessage(channel, sender + ": Multi Purpose Artificial Inelegance Program" +
+                                        " - Version " + Constants.VERSION +
+                                        " - (c) Alexandre Gauthier <alex@underwares.org>");
+                sendMessage(channel, sender + ": http://www.underwares.org/codex/projects/show/cyanure");
+            } else if (input.equalsIgnoreCase("*tasks")) {
+                sendMessage(channel, sender + ": " + taskmanager.toString());
             } else {
                 sendMessage(channel, sender + ": " + soul.converse(input));
             }
