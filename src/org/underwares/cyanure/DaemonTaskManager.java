@@ -26,9 +26,8 @@ package org.underwares.cyanure;
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -46,8 +45,8 @@ public final class DaemonTaskManager {
     private final ScheduledExecutorService threadpool =
             Executors.newScheduledThreadPool(Configuration.getTm_maxthreads());
 
-    private final List<ScheduledFuture> taskindex =
-            new ArrayList<ScheduledFuture>();
+    private final Map<String,ScheduledFuture> tasks =
+            new HashMap<String, ScheduledFuture>();
 
     private static DaemonTaskManager instance = null;
 
@@ -82,8 +81,9 @@ public final class DaemonTaskManager {
         ScheduledFuture<?> taskHandle =
                 threadpool.scheduleAtFixedRate(dtask, initialdelay,
                     intervalMinutes, MINUTES);
+        
         // Add handle to tasklist
-        taskindex.add(taskHandle);
+        tasks.put(task.getClass().getSimpleName(), taskHandle);
     }
 
     /**
@@ -109,9 +109,9 @@ public final class DaemonTaskManager {
      * interrupting them if necessary.
      */
     public void cancelAllTasks(){
-        for(ScheduledFuture<?> task : taskindex){
-            task.cancel(true);
-            taskindex.remove(task);
+        for(String task : tasks.keySet()){
+            (tasks.get(task)).cancel(true);
+            tasks.remove(task);
         }
     }
 
@@ -120,7 +120,7 @@ public final class DaemonTaskManager {
      * @return amount of scheduled tasks
      */
     public int getTaskCount(){
-        return taskindex.size();
+        return tasks.size();
     }
 
     /**
@@ -130,9 +130,9 @@ public final class DaemonTaskManager {
     @Override
     public String toString(){
         String summary = "Current Tasks: ";
-        for(ScheduledFuture<?> task : taskindex){
-            summary = summary + task.toString() +
-                    "(t-" + task.getDelay(MINUTES) + " minutes) ";
+        for(String task : tasks.keySet()){
+            summary = summary + task +
+                    "(t-" + (tasks.get(task)).getDelay(MINUTES) + " minutes) ";
         }
         return summary;
     }
