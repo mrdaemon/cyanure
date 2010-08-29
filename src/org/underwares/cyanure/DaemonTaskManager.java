@@ -50,6 +50,14 @@ public final class DaemonTaskManager {
 
     private static DaemonTaskManager instance = null;
 
+
+    /**
+     * Private constructor.
+     * This is a singleton class.
+     */
+    private DaemonTaskManager(){
+    }
+
     /**
      * Get current instance of DaemonTaskManager
      * @return DaemonTaskManager instance

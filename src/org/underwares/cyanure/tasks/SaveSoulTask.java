@@ -46,7 +46,11 @@ public class SaveSoulTask implements Runnable {
 
     public void run() {
         try {
+            System.out.println(this.getClass().getSimpleName() +
+                    ": Saving soul...");
             soulobject.save(Configuration.getBrainFile());
+            System.out.println(this.getClass().getSimpleName() +
+                    ": Soul saved.");
         } catch (FileNotFoundException ex) {
             System.err.println("Unable to save our soul! " +
                     Configuration.getBrainFile() + ": No such file!");
