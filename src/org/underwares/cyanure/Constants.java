@@ -32,5 +32,5 @@ package org.underwares.cyanure;
  */
 public class Constants {
     public static String AUTHOR = "Alexandre Gauthier <alex@lab.underwares.org>";
-    public static String VERSION = "1.1a-svn $Rev$";
+    public static String VERSION = "1.1.2-dev $Rev$";
 }

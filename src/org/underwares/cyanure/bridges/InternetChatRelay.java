@@ -36,59 +36,136 @@ import org.underwares.cyanure.Constants;
 import org.underwares.cyanure.DaemonTaskManager;
 
 /**
- *
- * @author supernaut
+ * IRC connectivity Bridge
+ * 
+ * @author Alexandre Gauthier
  */
 public class InternetChatRelay extends PircBot{
 
-    Soul soul;
+    Soul soul = null;
     DaemonTaskManager taskmanager = DaemonTaskManager.getInstance();
 
+    /**
+     * Construct an instance of the IRC Bridge
+     *
+     * @param soul  Soul Instance to use
+     */
     public InternetChatRelay(Soul soul){
-        //TODO: Make this, well, not static.
         this.setName(Configuration.getAiname());
         this.soul = soul;
     }
 
+    /**
+     * Respond to CTCP VERSION calls with Cyanure's current version number.
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onVersion(String sourceNick, String sourceLogin, String sourceHostname, String target) {
+        this.sendRawLine("NOTICE " + sourceNick + " :\u0001VERSION "
+                + "Cyanure " + Constants.VERSION + "\u0001");
+    }
+
+
+    /**
+     * Take action on message received through channel
+     * 
+     * {@inheritDoc}
+     */
     @Override
     public void onMessage(String channel, String sender,
             String login, String hostname, String message){
-        
-        String prefix = this.getNick() + ": ";
 
-        if (message.toLowerCase().startsWith(prefix)) {
-            String input = message.replaceFirst(prefix, "");
+        String input = ""; // interesting message content
 
-            if (input.equalsIgnoreCase("*time")) {
-                String time = new java.util.Date().toString();
-                sendMessage(channel, sender + ": Local time here is " + time);
-            } else if (input.equalsIgnoreCase("*talk")) {
-                sendMessage(channel, sender + ": " + soul.speak());
-            } else if (input.equalsIgnoreCase("*save")) {
-                sendMessage(channel, "## Saving soul...");
-                try {
-                    soul.save(Configuration.getBrainFile());
-                } catch (FileNotFoundException ex) {
-                    sendMessage(channel, "## ERROR: File not found.");
-                } catch (IOException ex) {
-                    sendMessage(channel, "## ERROR: Generic IO Exception.");
-                } catch (Exception ex) {
-                    sendMessage(channel, "## ERROR: Unhandled Exception. Check logs for details.");
-                } finally {
-                    sendMessage(channel, "## Done.");
+        if(isConcernedBy(message)){
+            /*
+             * Detecting if the bot was directly addressed seems like the
+             * absolute best course of action.
+             *
+             * It allows us to prevent commands from being triggered by mistake.
+             */
+            if(isDirectlyAddressedBy(message)){
+
+                // Strip prefix from raw message, keeping meaningful contents.
+                input = stripPrefix(message);
+
+                // System Commands
+                // TODO: Allow trigger to be customized
+                // TODO: Cleanup this code. It is the ugliest and dirtiest.
+                if (input.equalsIgnoreCase("*time")) {
+                    String time = new java.util.Date().toString();
+                    sendMessage(channel, sender + ": Local time here is " + time);
+                } else if (input.equalsIgnoreCase("*talk")) {
+                    sendMessage(channel, sender + ": " + soul.speak());
+                } else if (input.equalsIgnoreCase("*save")) {
+                    sendMessage(channel, "## Saving soul...");
+                    try {
+                        soul.save(Configuration.getBrainFile());
+                    } catch (FileNotFoundException ex) {
+                        sendMessage(channel, "## ERROR: File not found.");
+                    } catch (IOException ex) {
+                        sendMessage(channel, "## ERROR: Generic IO Exception.");
+                    } catch (Exception ex) {
+                        sendMessage(channel, "## ERROR: Unhandled Exception. Check logs for details.");
+                    } finally {
+                        sendMessage(channel, "## Done.");
+                    }
+                //} else if (input.equalsIgnoreCase("*stats")){
+                    // unimplemented
+                } else if (input.equalsIgnoreCase("*version") || input.equalsIgnoreCase("*about")) {
+                    sendMessage(channel, sender + ": Multi Purpose Artificial Inelegance Program" +
+                                            " - Version " + Constants.VERSION +
+                                            " - (c) Alexandre Gauthier <alex@underwares.org>");
+                    sendMessage(channel, sender + ": http://www.underwares.org/codex/projects/show/cyanure");
+                } else if (input.equalsIgnoreCase("*tasks")) {
+                    sendMessage(channel, sender + ": " + taskmanager.toString());
+                } else {
+                    // That definitely was not a command.
+                    // Converse with user as a direct reply.
+                    sendMessage(channel, sender + ": " + soul.converse(input));
                 }
-            } else if (input.equalsIgnoreCase("*version")) {
-                sendMessage(channel, sender + ": Multi Purpose Artificial Inelegance Program" +
-                                        " - Version " + Constants.VERSION +
-                                        " - (c) Alexandre Gauthier <alex@underwares.org>");
-                sendMessage(channel, sender + ": http://www.underwares.org/codex/projects/show/cyanure");
-            } else if (input.equalsIgnoreCase("*tasks")) {
-                sendMessage(channel, sender + ": " + taskmanager.toString());
             } else {
-                sendMessage(channel, sender + ": " + soul.converse(input));
+                // Message was not addressed to the bot.
+                // Speak globally in channel.
+                sendMessage(channel, soul.converse(input));
             }
         } else {
-            soul.learn(message);
+            // Was not concerned by message at all.
+            // Just learn from it.
+            soul.learn(input);
         }
+    }
+
+    /**
+     * Determine if we should take interest in message,
+     * This is based solely on the presence of our name within it.
+     *
+     * @param message  message to analyze
+     * @return true  on interest.
+     */
+    private boolean isConcernedBy(String message){
+        return message.matches("(?i)^(.*\\s+)?" + this.getNick() + ":?(\\s+.*)?(\\W+)?$");
+    }
+
+    /**
+     * Determine if we were directly addressed, 
+     * i.e. if the sentence began with our name.
+     *
+     * @param message  message to analyze
+     * @return true  on prefix presence
+     */
+    private boolean isDirectlyAddressedBy(String message){
+        return message.matches("(?i)^" + this.getNick() + ":?\\s?.*");
+    }
+
+    /**
+     * Strip the prefix from a message directly addressed to the bot.
+     * 
+     * @param message  raw message to strip prefix from
+     * @return  message contents
+     */
+    private String stripPrefix(String message){
+        return message.replaceFirst("(?i)(" + this.getNick() + ":?\\s?)(.*)","$2");
     }
 }
