@@ -133,7 +133,7 @@ public class InternetChatRelay extends PircBot{
         } else {
             // Was not concerned by message at all.
             // Just learn from it.
-            soul.learn(input);
+            soul.learn(message);
         }
     }
 
