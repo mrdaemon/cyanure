@@ -71,4 +71,8 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <target name="-post-jar">
+	    <echo message="Copying default configuration file to dist"/>
+	    <copy file="configuration.EXAMPLE.properties" todir="${dist.dir}"/>
+    </target>
 </project>
