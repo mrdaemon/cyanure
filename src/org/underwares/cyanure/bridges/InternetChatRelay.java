@@ -145,7 +145,7 @@ public class InternetChatRelay extends PircBot{
      * @return true  on interest.
      */
     private boolean isConcernedBy(String message){
-        return message.matches("(?i)^(.*\\s+)?" + this.getNick() + "\\w?(\\s+.*)?(\\W+)?$");
+        return message.matches("(?i)^(.*\\s+)?" + this.getNick() + "\\W?(\\s+.*)?(\\W+)?$");
     }
 
     /**
