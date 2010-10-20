@@ -113,9 +113,32 @@ public class Soul {
      * Dumps current knowledge to disk.
      */
     public synchronized void save(String uri) throws FileNotFoundException, IOException {
-        FileOutputStream fos = new FileOutputStream(uri);
+        // Suffix to append to temporary buffer
+        String tmpsuffix = ".save";
+
+        // Save file to intermedediary file, atomically
+        FileOutputStream fos = new FileOutputStream(uri + tmpsuffix);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(this.ai);
         oos.flush();
+
+        // Rename the .save file to the original URI filename:
+        // rename is atomic on POSIX system if the file already exists.
+        // It "feels" somewhat safer on windows, too.
+        File fsrc = new File(uri + tmpsuffix);
+        File fdest = new File(uri);
+
+        if(fdest.exists()){
+            if(!fsrc.renameTo(fdest)){
+                // Rename failed. Possibly on windows.
+                System.err.println("WARNING: Unable to perform atomic save routine.");
+                System.err.println("WARNING: File integrity not guaranteed at this point.");
+                // Delortan original file.
+                fdest.delete();
+                if(!fsrc.renameTo(fdest)){
+                    throw new IOException();
+                }
+            }
+        }
     }
 }
