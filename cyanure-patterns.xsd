@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+targetNamespace="http://authority.underwares.org/cyanure-patterns/"
+xmlns="http://authority.underwares.org/cyanure-patterns/">
+
+    <xs:annotation>
+        <xs:documentation xml:lang="en">
+            Patterns/Actions Schema for Cyanure
+            http://www.underwares.org/codex/projects/cyanure
+
+            Copyright (c) Alexandre Gauthier 2010-2011
+            alex@underwares.org
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType name="cyanure-patterns">
+        <xs:sequence>
+            <xs:element name="ignore" type="IgnorePattern" />
+            <xs:element name="trigger" type="TriggerPattern" />
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="CyanurePattern">
+        <xs:sequence>
+            <xs:element name="pattern" type="xs:string" />
+            <xs:element name="active" type="xs:boolean" minOccurs="0" maxOccurs="1" default="True" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="IgnorePattern">
+        <xs:complexContent>
+            <xs:extension base="CyanurePattern">
+                <xs:sequence>
+                    <xs:element name="description" type="xs:string" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="TriggerPattern">
+        <xs:complexContent>
+            <xs:extension base="CyanurePattern">
+                <xs:attribute name="system" type="boolean" default="false" />
+                <xs:sequence>
+                    <xs:element name="note" type="xs:string" />
+                    <xs:element name="runnable" type="runnable-class" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="runnable-class">
+        <xs:attribute name="package" type="package-name" use="required" />
+        <xs:attribute name="class" type="class-name" use="required" />
+        <xs:sequence>
+            <xs:element name="argument" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="class-name">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="\p{Lu}\p{L}*" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="package-name">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(\p{L}\.*)+" />
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>
