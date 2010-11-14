@@ -40,6 +40,8 @@ import com.martiansoftware.jsap.*;
 import org.jibble.jmegahal.JMegaHal;
 import org.jibble.pircbot.IrcException;
 
+import bsh.Interpreter;
+
 /**
  * Main Class
  * @author Alexandre Gauthier
@@ -76,8 +78,10 @@ public class Main {
         System.out.println("  ####      #    #    #  #    #   ####   #    #  ######");
         System.out.println();
         System.out.println("Multi Purpose Artifical Inelegance Program");
-        System.out.println("Version " + Constants.VERSION);
+        System.out.println(Constants.getVersionString());
         System.out.println("Copyright (c) " + Constants.AUTHOR + " 2010-2011");
+        System.out.println();
+        System.out.println(Constants.getBuildInfoString(true));
         System.out.println();
 
         // Parameters Setup

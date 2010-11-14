@@ -56,6 +56,8 @@ public class Configuration {
 
     // Advanced Settings, with defaults
     private static int tm_maxthreads = 1;
+    private static Boolean debug_shell = false;
+    private static int debug_shell_port = 9998;
 
     /**
      * Load Configuration File
@@ -90,6 +92,14 @@ public class Configuration {
         // Set advanced private members (with defaults)
         if(config.containsKey("tm_maxthreads")){
             Configuration.setTm_maxthreads(config.getProperty("tm_maxthreads"));
+        }
+
+        if(config.containsKey("debug_shell")){
+            Configuration.setDebug_shell(config.getProperty("debug_shell"));
+        }
+
+        if(config.containsKey("debug_shell_port")){
+            Configuration.setDebug_shell_port(config.getProperty("debug_shell_port"));
         }
 
     }
@@ -158,7 +168,24 @@ public class Configuration {
         return tm_maxthreads;
     }
 
+    /**
+     * Get boolean value as to enable remote debugging shell
+     *
+     * @return debug_shell  Spawn debug shell?
+     */
+    public static Boolean getDebug_shell() {
+        return debug_shell;
+    }
 
+    /**
+     * Get TCP Port to run debug shell on.
+     * Default is 9998
+     *
+     * @return debug_shell_port  Debug Shell TCP Port
+     */
+    public static int getDebug_shell_port() {
+        return debug_shell_port;
+    }
 
     /*
      * External Getters
@@ -284,6 +311,33 @@ public class Configuration {
     }
 
     /**
+     * Spawn debug shell on a TCP port
+     *
+     * @param debugshell (must be textual boolean)
+     * @throws InvalidAIConfigException
+     */
+    private static void setDebug_shell(String debugshell)
+            throws InvalidAIConfigException {
+        if(debugshell.equalsIgnoreCase("true")){
+            Configuration.debug_shell = true;
+        } else if(debugshell.equalsIgnoreCase("false")){
+            Configuration.debug_shell = false;
+        } else {
+            throw new InvalidAIConfigException("debugshell must be 'true' or 'false'.");
+        }
+    }
+
+    private static void setDebug_shell_port(String debug_shell_port)
+            throws InvalidAIConfigException {
+        try{
+            int dsport = Integer.parseInt(debug_shell_port);
+            Configuration.debug_shell_port = dsport;
+        } catch(NumberFormatException ex) {
+            throw new InvalidAIConfigException("debug_shell_port must be an integer.");
+        }
+    }
+
+    /**
      * Get textual representation of Configuration
      * 
      * @return
@@ -296,8 +350,10 @@ public class Configuration {
                 + "IRC Password? " + Configuration.irc_identpassword + "\n"
                 + "IRC AltNick: " + Configuration.irc_altnickname + "\n"
                 + "\n"
-                + "** Optional Settings **"
+                + "** Optional Settings **\n"
                 + "Daemon Task Manager Thread Pool Size: "
-                + Configuration.tm_maxthreads + "\n";
+                + Configuration.tm_maxthreads + "\n"
+                + "Spawn debug shell? " + Configuration.debug_shell.toString() + "\n"
+                + "Debug Shell TCP Port: " + Configuration.debug_shell_port + "\n";
     }
 }

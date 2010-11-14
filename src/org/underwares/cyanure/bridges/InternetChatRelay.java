@@ -63,7 +63,7 @@ public class InternetChatRelay extends PircBot{
     @Override
     protected void onVersion(String sourceNick, String sourceLogin, String sourceHostname, String target) {
         this.sendRawLine("NOTICE " + sourceNick + " :\u0001VERSION "
-                + "Cyanure " + Constants.VERSION + "\u0001");
+                + "Cyanure " + Constants.getVersionString() + "\u0001");
     }
 
 
@@ -115,7 +115,7 @@ public class InternetChatRelay extends PircBot{
                     // unimplemented
                 } else if (input.equalsIgnoreCase("*version") || input.equalsIgnoreCase("*about")) {
                     sendMessage(channel, sender + ": Multi Purpose Artificial Inelegance Program" +
-                                            " - Version " + Constants.VERSION +
+                                            " - " + Constants.getVersionString() +
                                             " - (c) Alexandre Gauthier <alex@underwares.org>");
                     sendMessage(channel, sender + ": http://www.underwares.org/codex/projects/show/cyanure");
                 } else if (input.equalsIgnoreCase("*tasks")) {
