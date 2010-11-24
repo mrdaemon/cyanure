@@ -78,6 +78,14 @@
     nbproject/build-impl.xml file. 
 
     -->
+    
+    <!-- enable ant-contrib for this project -->
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath>
+            <pathelement location="${basedir}/lib/ant-contrib.jar"/>
+        </classpath>
+    </taskdef>
+
     <target name="getversioninfo">
         <typedef file="${basedir}/lib/svntask.xml">
             <classpath>
