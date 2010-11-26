@@ -1,5 +1,5 @@
 package org.underwares.cyanure.tasks;
-/* $Id: Main.java 1233 2010-06-12 04:48:30Z supernaut $
+/* $Id$
  *   ____
  *  / ___|   _  __ _ _ __  _   _ _ __ ___
  * | |  | | | |/ _` | '_ \| | | | '__/ _ \

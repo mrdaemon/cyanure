@@ -59,6 +59,9 @@ public class Configuration {
     private static Boolean debug_shell = false;
     private static int debug_shell_port = 9998;
 
+    // Default Telnet Server Properties
+    private static Properties telnetd = new Properties();
+
     /**
      * Load Configuration File
      *
@@ -311,7 +314,7 @@ public class Configuration {
     }
 
     /**
-     * Spawn debug shell on a TCP port
+     * Spawn a Shell Server?
      *
      * @param debugshell (must be textual boolean)
      * @throws InvalidAIConfigException
@@ -327,13 +330,27 @@ public class Configuration {
         }
     }
 
+    /**
+     * Set the TCP port to bind Shell Server to
+     * Default: 9998
+     *
+     * @param debug_shell_port  TCP Port to bind Shell Server to
+     * @throws InvalidAIConfigException
+     */
     private static void setDebug_shell_port(String debug_shell_port)
             throws InvalidAIConfigException {
+        int dsport;
         try{
-            int dsport = Integer.parseInt(debug_shell_port);
-            Configuration.debug_shell_port = dsport;
+            dsport = Integer.parseInt(debug_shell_port);
         } catch(NumberFormatException ex) {
             throw new InvalidAIConfigException("debug_shell_port must be an integer.");
+        }
+
+        // The crappiest validation ever.
+        if(dsport > 65535 || dsport <= 1){
+            throw new InvalidAIConfigException("debug_shell_port must be a valid TCP Port [1-65535]");
+        } else {
+            Configuration.debug_shell_port = dsport;
         }
     }
 
@@ -353,7 +370,7 @@ public class Configuration {
                 + "** Optional Settings **\n"
                 + "Daemon Task Manager Thread Pool Size: "
                 + Configuration.tm_maxthreads + "\n"
-                + "Spawn debug shell? " + Configuration.debug_shell.toString() + "\n"
+                + "Spawn shell server: " + Configuration.debug_shell.toString() + "\n"
                 + "Debug Shell TCP Port: " + Configuration.debug_shell_port + "\n";
     }
 }

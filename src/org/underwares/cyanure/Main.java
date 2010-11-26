@@ -40,8 +40,6 @@ import com.martiansoftware.jsap.*;
 import org.jibble.jmegahal.JMegaHal;
 import org.jibble.pircbot.IrcException;
 
-import bsh.Interpreter;
-
 /**
  * Main Class
  * @author Alexandre Gauthier
@@ -83,6 +81,7 @@ public class Main {
         System.out.println();
         System.out.println(Constants.getBuildInfoString(true));
         System.out.println();
+        // TODO: implement RuntimeData class, with counters and jvm/platform info.
 
         // Parameters Setup
         JSAP jsap = new JSAP();
@@ -102,6 +101,7 @@ public class Main {
         }
 
         // Stop after displaying header if version was requested.
+        // TODO: Fix this so it outputs a nice string, or move to above block.
         if(config.getBoolean("version")){
             System.exit(0);
         }
@@ -195,6 +195,20 @@ public class Main {
                 System.exit(1);
             }
         }
+
+        // Launch Shell Server Daemon, if requested via configuration.properties
+        if(Configuration.getDebug_shell()){
+            try {
+                ShellServer server = ShellServer.getInstance();
+                server.start();
+            } catch (ShellServerErrorException ex) {
+                System.err.println("FATAL: Shell Server failed to initalize: " +
+                        ex.getLocalizedMessage());
+                System.err.println("Aborting execution.");
+                System.exit(1);
+            }
+        }
+
 
         // Prepare DaemonTaskManager and register Tasks
         System.out.println("Initializing Daemon Tasks...");

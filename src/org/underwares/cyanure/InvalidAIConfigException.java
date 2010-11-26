@@ -41,6 +41,7 @@ public class InvalidAIConfigException extends Exception {
 
     /**
      * Constructs an instance of <code>InvalidAIConfigException</code> with the specified detail message.
+     * 
      * @param msg the detail message.
      */
     public InvalidAIConfigException(String msg) {
