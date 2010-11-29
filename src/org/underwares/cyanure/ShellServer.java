@@ -27,8 +27,7 @@ package org.underwares.cyanure;
  */
 
 import java.util.Properties;
-import net.wimpi.telnetd.BootException;
-import net.wimpi.telnetd.TelnetD;
+import org.apache.sshd.SshServer;
 
 /**
  * Manage and run the Shell Server process.
@@ -46,7 +45,7 @@ public class ShellServer {
     private static final Properties default_config;
 
     // Telnet Daemon instance member, wrapper of sorts.
-    private TelnetD daemon;
+    private SshServer daemon;
 
     // Current status
     private boolean active = false;
