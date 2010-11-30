@@ -26,8 +26,13 @@ package org.underwares.cyanure;
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-import java.util.Properties;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.sshd.SshServer;
+import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
+
+import org.underwares.cyanure.sshd.NullFileSystemFactory;
 
 /**
  * Manage and run the Shell Server process.
@@ -42,91 +47,12 @@ public class ShellServer {
      * and default server configuration, initialized below.
      */
     private static ShellServer instance = null;
-    private static final Properties default_config;
 
     // Telnet Daemon instance member, wrapper of sorts.
     private SshServer daemon;
 
     // Current status
     private boolean active = false;
-
-    /*
-     * Static constructor, initializes default configuration.
-     */
-    static {
-        /*
-         * Default Settings,
-         * Bundled in a Properties object.
-         */
-        default_config = new Properties();
-
-        /*
-         * Default Terminals
-         */
-        default_config.setProperty("terminals", "vt100,ansi,windoof,xterm");
-
-        // vt100 implementation
-        default_config.setProperty("term.vt100.class",
-                "net.wimpi.telnetd.io.terminal.vt100");
-        default_config.setProperty("term.vt100.aliases",
-                "default,vt100-am,vt102,dec-vt100");
-
-        // ANSI implementation
-        default_config.setProperty("term.ansi.class",
-                "net.wimpi.telnetd.io.terminal.ansi");
-        default_config.setProperty("term.ansi.aliases",
-                "color-xterm,xterm-color,vt320,vt220,linux,screen");
-
-        // Windows ANSI.SYS/telnet.exe implementation
-        default_config.setProperty("term.windoof.class",
-                "net.wimpi.telnetd.io.terminal.Windoof");
-        default_config.setProperty("term.windoof.aliases","");
-
-        // xterm implementation
-        default_config.setProperty("term.xterm.class",
-                "net.wimpi.telnetd.io.terminal.xterm");
-        default_config.setProperty("term.xterm.aliases", "");
-
-        /*
-         * Shells and their implementations
-         * At the moment, only DebugShell
-         */
-        default_config.setProperty("shells", "loginshell,dummyshell");
-        default_config.setProperty("shell.loginshell.class",
-                "org.underwares.cyanure.console.LoginShell");
-        default_config.setProperty("shell.dummyshell.class", 
-                "net.wimpi.telnetd.shell.DummyShell");
-
-        /*
-         * Listeners
-         */
-        default_config.setProperty("listeners", "std");
-
-        // TCP Port fetched from global Configuration
-        default_config.setProperty("std.port",
-                Integer.toString(Configuration.getDebug_shell_port()));
-
-        // Flood protection and max connections
-        default_config.setProperty("std.floodprotection", "5");
-        default_config.setProperty("std.maxcon", "1"); // Can't deal with mu yet
-
-        // Timeout Values (ms)
-        default_config.setProperty("std.time_to_warning", "3600000");
-        default_config.setProperty("std.time_to_timedout", "60000");
-
-        // Housekeeping Thread Activity Treshold
-        default_config.setProperty("std.housekeepinginterval", "1000");
-
-        // Listener input mode
-        default_config.setProperty("std.inputmode", "character");
-
-        // Login Shell
-        default_config.setProperty("std.loginshell", "loginshell");
-
-        // Connection filtering
-        // TODO: Expose configurable property through Configuration for IP limits
-        default_config.setProperty("std.connectionfilter", "none");
-    }
 
     /* Singleton class, so, Private Constructor. For now at least.
      * The idea is to eventually have a pool of these for various
@@ -135,19 +61,17 @@ public class ShellServer {
      *
      * This constructor generates a server with the default, static config.
      */
-    private ShellServer() throws ShellServerErrorException {
-        this(default_config);
-    }
-
-    /*
-     * Actual private constructor. Left this option open,
-     * should I ever wish to read the configuration from a Properties file.
-     */
-    private ShellServer(Properties config) throws ShellServerErrorException{
+    private ShellServer() throws ShellServerErrorException{
         System.out.println("Initializing Shell Server Daemon...");
         try {
-            this.daemon = TelnetD.createTelnetD(config);
-        } catch (BootException ex) {
+            this.daemon = SshServer.setUpDefaultServer();
+            this.daemon.setFileSystemFactory(new NullFileSystemFactory());
+            this.daemon.setPort(Configuration.getDebug_shell_port());
+            this.daemon.setKeyPairProvider(
+                    new SimpleGeneratorHostKeyProvider(
+                    Configuration.getDebug_shell_hostkey()));
+        } catch (Exception ex) {
+            //FIXME: Catching generic Exception here sucks. Don't.
             throw new ShellServerErrorException(ex.getLocalizedMessage());
         }
     }
@@ -178,22 +102,29 @@ public class ShellServer {
     /**
      * Start serving with current configuration.
      */
-    public void start(){
+    public void start() throws ShellServerErrorException{
         System.out.println("Starting Shell Server Daemon...");
-        this.daemon.start();
+        try {
+            this.daemon.start();
+        } catch (IOException ex) {
+            throw new ShellServerErrorException(ex.getLocalizedMessage());
+        }
         this.active = true;
         System.out.println("Shell Server Daemon listening on 0.0.0.0:" +
                 Configuration.getDebug_shell_port());
     }
 
-    public void shutdown() {
+    public void shutdown() throws ShellServerErrorException {
         System.out.println("Shutting down Shell Server daemon...");
         if(this.isRunning()){
-            this.daemon.stop();
+            try {
+                this.daemon.stop();
+            } catch (InterruptedException ex) {
+                throw new ShellServerErrorException(ex.getLocalizedMessage());
+            }
         } else {
             System.err.println("WARNING: Daemon was already dead?");
         }
-        
         System.out.println("Shell Server Daemon terminated.");
     }
 }

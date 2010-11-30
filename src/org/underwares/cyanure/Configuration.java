@@ -58,9 +58,7 @@ public class Configuration {
     private static int tm_maxthreads = 1;
     private static Boolean debug_shell = false;
     private static int debug_shell_port = 9998;
-
-    // Default Telnet Server Properties
-    private static Properties telnetd = new Properties();
+    private static String debug_shell_hostkey = "ssh_hostkey";
 
     /**
      * Load Configuration File
@@ -89,7 +87,8 @@ public class Configuration {
         Configuration.setIrc_server(config.getProperty("irc_server"));
         Configuration.setIrc_channel(config.getProperty("irc_channel"));
         Configuration.setIrc_doidentify(config.getProperty("irc_doidentify"));
-        Configuration.setIrc_identpassword(config.getProperty("irc_identpassword"));
+        Configuration.setIrc_identpassword(
+                config.getProperty("irc_identpassword"));
         Configuration.setIrc_altnickname(config.getProperty("irc_altnickname"));
 
         // Set advanced private members (with defaults)
@@ -102,9 +101,14 @@ public class Configuration {
         }
 
         if(config.containsKey("debug_shell_port")){
-            Configuration.setDebug_shell_port(config.getProperty("debug_shell_port"));
+            Configuration.setDebug_shell_port(
+                    config.getProperty("debug_shell_port"));
         }
 
+        if(config.containsKey("debug_shell_hostkey")){
+            Configuration.setDebug_shell_hostkey(
+                    config.getProperty("debug_shell_hostkey"));
+        }
     }
 
     /**
@@ -188,6 +192,10 @@ public class Configuration {
      */
     public static int getDebug_shell_port() {
         return debug_shell_port;
+    }
+
+    public static String getDebug_shell_hostkey() {
+        return debug_shell_hostkey;
     }
 
     /*
@@ -352,6 +360,19 @@ public class Configuration {
         } else {
             Configuration.debug_shell_port = dsport;
         }
+    }
+
+    /**
+     * Set the host key file used by the SSH Server
+     * Default: 'ssh_hostkey'
+     *
+     * @param ssh_hostkey Filename to use as SSH host key store
+     * @throws InvalidAIConfigException
+     */
+    private static void setDebug_shell_hostkey(String debug_shell_hostkey)
+            throws InvalidAIConfigException {
+        //TODO: Implement basic validation
+        Configuration.debug_shell_hostkey = debug_shell_hostkey;
     }
 
     /**
