@@ -58,7 +58,6 @@ To validate your configuration, run the following:
 
 You should see output such as:
 <pre>
-
   ####    #   #    ##    #    #  #    #  #####   ######
  #    #    # #    #  #   ##   #  #    #  #    #  #
  #          #    #    #  # #  #  #    #  #    #  #####
@@ -84,7 +83,6 @@ IRC AltNick: _cyanure
 Daemon Task Manager Thread Pool Size: 1
 
 CONFIGURATION SANITY TESTS SUCCESSFUL!
-
 </pre>
 
 If you did something wrong, the testing routine will let you know. For instance ommiting the /#/ character from the IRC channel setting will result in the following error:
