@@ -17,20 +17,20 @@ h2. Prerequisites
 
 You will need the following software and components:
 
-* A "subversion client":http://subversion.apache.org (svn) for your platform.
+* A working "Git installation":http://git-scm.com/ for your platform.
 * A full "JDK":http://www.oracle.com/technetwork/java/javase/downloads/index.html#need (Java Development Kit) installed, _version *1.6 (Java 6)* or later_
 * Apache "Ant":http://ant.apache.org/bindownload.cgi installed and "Properly Configured":http://ant.apache.org/manual/install.html#installing.
 
 h2. Checking out the code
 
-You will need a subversion client.
+You will need a git install.
 
 In a directory of your choice on your computer, run the following:
 <pre>
-svn co https://www.underwares.org/svn/repos/Cyanure/trunk cyanure
+git clone git://github.com/mrdaemon/cyanure.git
 </pre>
 
-This will checkout the current dev (bleeding edge) sources in a directory named "cyanure".
+This will checkout the current master (dev) sources in a directory named "cyanure".
 
 h2. Building the source
 
@@ -159,7 +159,7 @@ To send a command to the bot, you must address it with it's name. For instance i
 <pre>cyanure: *command</pre>
 Where '*command' is a supported command.
 
-Supported ones as of r1275:
+Supported ones as of r1275 (old svn notation):
 
 h3. *version
 
