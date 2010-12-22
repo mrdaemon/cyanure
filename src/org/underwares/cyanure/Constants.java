@@ -91,7 +91,7 @@ public class Constants {
      * @return Version information string
      */
     public static String getVersionString(){
-        return "Version " + VERSION + "-" + BRANCH + " r" + REVISION;
+        return "Version " + VERSION + "-" + BRANCH + " (" + REVISION + ")";
     }
 
     /**
