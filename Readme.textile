@@ -1,0 +1,184 @@
+h1. Multi-Purpose Artificial Inelegance Project
+
+A rather simple markov chain AI based on JMegaHal with mutiple bridges to multiple protocols, such as local chat and IRC.
+The long term goals are:
+
+* Enhance the AI to give the illusion of personality through basic means
+* Add multiple protocol bridges, such as IM, web, and crawling.
+* The bot will eventually perform certain activities to learn new content from the internet and various sources.
+
+We're far from this, as this is just for fun, but it makes for a pretty amusing megahal irc bot clone.
+
+h1. Quickstart Guide
+
+This document describes the steps required to build and run Cyanure from source.
+
+h2. Prerequisites
+
+You will need the following software and components:
+
+* A "subversion client":http://subversion.apache.org (svn) for your platform.
+* A full "JDK":http://www.oracle.com/technetwork/java/javase/downloads/index.html#need (Java Development Kit) installed, _version *1.6 (Java 6)* or later_
+* Apache "Ant":http://ant.apache.org/bindownload.cgi installed and "Properly Configured":http://ant.apache.org/manual/install.html#installing.
+
+h2. Checking out the code
+
+You will need a subversion client.
+
+In a directory of your choice on your computer, run the following:
+<pre>
+svn co https://www.underwares.org/svn/repos/Cyanure/trunk cyanure
+</pre>
+
+This will checkout the current dev (bleeding edge) sources in a directory named "cyanure".
+
+h2. Building the source
+
+You will need a JDK and Apache Ant installed.
+
+Switch to the source directory and run 'ant'.
+<pre>
+$ cd cyanure
+$ ant
+</pre>
+
+The last line resulting from this command should be *BUILD SUCCESSFUL*.
+
+The relevant files will be in the *dist/* directory. Copy and rename that directory to a location of your choice.
+
+h2. Configuration
+
+Copy or rename the example configuration file (configuration.EXAMPLE.properties) to *configuration.properties*.
+Edit the resulting file to your heart's content. Settings are pretty obvious, when they are not, they are commented.
+
+h3. Validate Config File
+
+To validate your configuration, run the following:
+<pre>java -jar Cyanure.jar -x</pre>
+
+You should see output such as:
+<pre>
+
+  ####    #   #    ##    #    #  #    #  #####   ######
+ #    #    # #    #  #   ##   #  #    #  #    #  #
+ #          #    #    #  # #  #  #    #  #    #  #####
+ #          #    ######  #  # #  #    #  #####   #
+ #    #     #    #    #  #   ##  #    #  #   #   #
+  ####      #    #    #  #    #   ####   #    #  ######
+
+Multi Purpose Artifical Inelegance Program
+Version 1.1.2a-dev $Rev: 1275 $
+Copyright (c) Alexandre Gauthier <alex*lab.underwares.org> 2010-2011
+
+Reading configuration file: configuration.properties
+Configuration Loaded.
+Loaded Configuration:
+AI Name: Cyanure
+IRC Server: irc.server.com
+IRC Channel: #channel
+IRC Identify? false
+IRC Password? password
+IRC AltNick: _cyanure
+
+** Optional Settings **
+Daemon Task Manager Thread Pool Size: 1
+
+CONFIGURATION SANITY TESTS SUCCESSFUL!
+
+</pre>
+
+If you did something wrong, the testing routine will let you know. For instance ommiting the /#/ character from the IRC channel setting will result in the following error:
+
+<pre>ERROR: Malformed configuration file.
+IRC Channel must start with #</pre>
+
+Just like entering "banana" for a boolean value will result in:
+<pre>ERROR: Malformed configuration file.
+irc_doidentify must be 'true' or 'false'.</pre>
+
+h2. Command line usage
+
+Cyanure accepts a few command line parameters. Running:
+<pre>java -jar Cyanure.jar --help</pre>
+
+Will list them. Here are the known ones, as of revision r1275:
+<pre>
+Usage:
+cyanure [-v|--version] [-i|--interactive] [(-f|--file) <brainfile>] [(-c|--config) <config>] [(-l|--learn)[:<learn>]] [-x|--validateconf]
+
+  [-v|--version]
+        Display version numbers and exit
+
+  [-i|--interactive]
+        Run Cyanure in interactive mode (conversation)
+
+  [(-f|--file) <brainfile>]
+        Brain file to use for this session (default: C:\Documents and
+        Settings\gauthiera\Bureau\temp\cyanure\dist\brain.dat)
+
+  [(-c|--config) <config>]
+        Configuration file to use. (default: C:\Documents and
+        Settings\gauthiera\Bureau\temp\cyanure\dist\configuration.properties)
+
+  [(-l|--learn)[:<learn>]]
+        Learn the content of the specified text file
+
+  [-x|--validateconf]
+        Validate config file and output values
+</pre>
+
+h2. Running Cyanure
+
+To run Cyanure with the IRC bridge enabled (default) and have act as an IRC bot simply run:
+<pre>java -jar Cyanure.jar</pre>
+
+To run Cyanure interactively, use the following:
+<pre>java -jar Cyanure.jar --interactive</pre>
+
+h3. Common usage scenarios
+
+To have Cyanure use a different config file:
+<pre>java -jar Cyanure.jar --config otherconfig.properties</pre>
+
+To have Cyanure use a different Soul(knowledge) dump (brain file), use:
+<pre>java -jar Cyanure.jar --file otherbrain.dat</pre>
+
+To have Cyanure learn the contents of a text file, use the following:
+<pre>java -jar Cyanure.jar --learn:input.txt</pre>
+
+
+h2. Interactive Mode Commands
+
+To list the available commands in Interactive Mode, send
+<pre>*HELP</pre>
+The command is case sensitive.
+
+h2. IRC commands
+
+To send a command to the bot, you must address it with it's name. For instance if the bot's name is 'cyanure':
+<pre>cyanure: *command</pre>
+Where '*command' is a supported command.
+
+Supported ones as of r1275:
+
+h3. *version
+
+bq. Will display the current version and a link to the code base.
+
+h3. *save
+
+bq. Will trigger a soul dump to disk
+
+h3. *time
+
+bq. Will ask the bot for the local time.
+
+h3. *talk
+
+bq. Will ask the bot to speak a line.
+
+h3. *tasks
+
+bq. Will list the background tasks and their remaining time in minutes before the next run.
+
+
