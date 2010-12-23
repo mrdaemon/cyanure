@@ -2,3 +2,5 @@
 /build/
 /dist/
 /src/org/underwares/cyanure/version.properties
+configuration.properties
+/nbproject/private
