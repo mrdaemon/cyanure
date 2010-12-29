@@ -57,7 +57,7 @@ To validate your configuration, run the following:
 <pre>java -jar Cyanure.jar -x</pre>
 
 You should see output such as:
-<pre>
+bc.
   ####    #   #    ##    #    #  #    #  #####   ######
  #    #    # #    #  #   ##   #  #    #  #    #  #
  #          #    #    #  # #  #  #    #  #    #  #####
@@ -83,9 +83,8 @@ IRC AltNick: _cyanure
 Daemon Task Manager Thread Pool Size: 1
 
 CONFIGURATION SANITY TESTS SUCCESSFUL!
-</pre>
 
-If you did something wrong, the testing routine will let you know. For instance ommiting the /#/ character from the IRC channel setting will result in the following error:
+p. If you did something wrong, the testing routine will let you know. For instance ommiting the /#/ character from the IRC channel setting will result in the following error:
 
 <pre>ERROR: Malformed configuration file.
 IRC Channel must start with #</pre>
@@ -100,8 +99,8 @@ Cyanure accepts a few command line parameters. Running:
 <pre>java -jar Cyanure.jar --help</pre>
 
 Will list them. Here are the known ones, as of revision r1275:
-<pre>
-Usage:
+
+bc. Usage:
 cyanure [-v|--version] [-i|--interactive] [(-f|--file) <brainfile>] [(-c|--config) <config>] [(-l|--learn)[:<learn>]] [-x|--validateconf]
 
   [-v|--version]
@@ -123,7 +122,6 @@ cyanure [-v|--version] [-i|--interactive] [(-f|--file) <brainfile>] [(-c|--confi
 
   [-x|--validateconf]
         Validate config file and output values
-</pre>
 
 h2. Running Cyanure
 
