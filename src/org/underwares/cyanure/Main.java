@@ -40,8 +40,6 @@ import com.martiansoftware.jsap.*;
 import org.jibble.jmegahal.JMegaHal;
 import org.jibble.pircbot.IrcException;
 
-import bsh.Interpreter;
-
 /**
  * Main Class
  * @author Alexandre Gauthier
