@@ -45,11 +45,8 @@ public final class DaemonTaskManager {
     private final ScheduledExecutorService threadpool =
             Executors.newScheduledThreadPool(Configuration.getTm_maxthreads());
 
-    private final Map<String,ScheduledFuture> tasks =
-            new HashMap<String, ScheduledFuture>();
-
+    private final Map<String,ScheduledFuture> tasks = new HashMap<>();
     private static DaemonTaskManager instance = null;
-
 
     /**
      * Private constructor.
