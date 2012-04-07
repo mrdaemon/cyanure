@@ -26,19 +26,14 @@ package org.underwares.cyanure;
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-import org.underwares.cyanure.bridges.*;
-import org.underwares.cyanure.ai.Soul;
-import org.underwares.cyanure.tasks.SaveSoulTask;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-
 import com.martiansoftware.jsap.*;
+import java.io.*;
 import org.jibble.jmegahal.JMegaHal;
 import org.jibble.pircbot.IrcException;
+import org.underwares.cyanure.ai.Soul;
+import org.underwares.cyanure.bridges.Interactive;
+import org.underwares.cyanure.bridges.InternetChatRelay;
+import org.underwares.cyanure.tasks.SaveSoulTask;
 
 /**
  * Main Class
