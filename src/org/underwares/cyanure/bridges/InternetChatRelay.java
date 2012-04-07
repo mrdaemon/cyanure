@@ -116,8 +116,8 @@ public class InternetChatRelay extends PircBot{
                 } else if (input.equalsIgnoreCase("*version") || input.equalsIgnoreCase("*about")) {
                     sendMessage(channel, sender + ": Multi Purpose Artificial Inelegance Program" +
                                             " - " + Constants.getVersionString() +
-                                            " - (c) Alexandre Gauthier <alex@underwares.org>");
-                    sendMessage(channel, sender + ": https://github.com/mrdaemon/cyanure");
+                                            " - (c) " + Constants.AUTHOR);
+                    sendMessage(channel, sender + ": " + Constants.URL);
                 } else if (input.equalsIgnoreCase("*tasks")) {
                     sendMessage(channel, sender + ": " + taskmanager.toString());
                 } else {

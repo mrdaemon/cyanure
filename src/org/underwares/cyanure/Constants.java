@@ -35,6 +35,7 @@ import java.util.MissingResourceException;
  */
 public class Constants {
     public static final String AUTHOR = "Alexandre Gauthier <alex@lab.underwares.org>";
+    public static final String URL = "https://github.com/mrdaemon/cyanure";
     public static final String VERSION;
     public static final String BRANCH;
     public static final String REVISION;
