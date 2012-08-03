@@ -193,7 +193,7 @@ public class Main {
         System.out.println("Initializing Daemon Tasks...");
         DaemonTaskManager bgtasks = DaemonTaskManager.getInstance();
 
-        bgtasks.scheduleTask(new SaveSoulTask(soul), 15);
+        bgtasks.scheduleTask(new SaveSoulTask(soul), 60);
 
         System.out.println("Initialized Daemon Task Manager with " +
                                 bgtasks.getTaskCount() + " task(s).");
